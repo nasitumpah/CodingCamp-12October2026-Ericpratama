@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life Dashboard</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem('tldd.theme');
+        document.documentElement.dataset.theme = (t === 'light') ? 'light' : 'dark';
+        // Restore blur level early to avoid flash
+        var b = localStorage.getItem('tldd.bgBlur');
+        if (b !== null) {
+          document.documentElement.style.setProperty('--bg-blur', b + 'px');
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+
+    <!-- ── Video Background ── -->
+    <div id="bg-video-container" aria-hidden="true">
+      <video
+        id="bg-video"
+        src="assets/bg-video.mp4"
+        autoplay
+        loop
+        muted
+        playsinline
+      ></video>
+      <div id="bg-video-overlay"></div>
+    </div>
+
+    <button id="theme-toggle" type="button" aria-label="Switch to light mode">🌙</button>
+
+    <!-- ── Blur Control Panel ── -->
+    <div id="blur-control" role="group" aria-label="Background blur control">
+      <label for="blur-slider">
+        <span class="blur-icon">✦</span>
+        Blur
+      </label>
+      <input
+        type="range"
+        id="blur-slider"
+        min="0"
+        max="20"
+        step="1"
+        value="8"
+        aria-label="Background blur level"
+      />
+      <span id="blur-value">8</span>
+    </div>
+
+    <main class="dashboard">
+      <!-- Greeting -->
+      <section id="greeting-section" class="card" aria-labelledby="greeting-heading">
+        <h2 id="greeting-heading">Greeting</h2>
+        <p id="greeting-label" class="greeting-label"></p>
+        <p id="greeting-time" class="greeting-time"></p>
+        <p id="greeting-date" class="greeting-date"></p>
+        <form id="name-form" class="name-form">
+          <label class="sr-only" for="name-input">Your name</label>
+          <input type="text" id="name-input" placeholder="Your name" maxlength="50" autocomplete="off" />
+          <button type="submit" id="name-save">Save</button>
+        </form>
+        <p id="greeting-message" class="message" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Focus Timer -->
+      <section id="timer-section" class="card" aria-labelledby="timer-heading">
+        <h2 id="timer-heading">Focus Timer</h2>
+        <p id="timer-display" class="timer-display">25:00</p>
+        <div class="timer-controls">
+          <button type="button" id="timer-start"><span class="btn-icon">▶</span> Start</button>
+          <button type="button" id="timer-stop"><span class="btn-icon">⏸</span> Stop</button>
+          <button type="button" id="timer-reset"><span class="btn-icon">↺</span> Reset</button>
+        </div>
+        <form id="duration-form" class="duration-form">
+          <label for="duration-input">Session (min)</label>
+          <input type="number" id="duration-input" min="1" max="90" step="1" value="25" />
+          <button type="submit" id="duration-set">Set</button>
+        </form>
+        <p id="timer-message" class="message" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- To-Do List -->
+      <section id="todo-section" class="card" aria-labelledby="todo-heading">
+        <h2 id="todo-heading">To-Do List</h2>
+        <form id="todo-form" class="todo-form">
+          <label class="sr-only" for="todo-input">New task</label>
+          <input
+            type="text"
+            id="todo-input"
+            name="todo-input"
+            placeholder="What needs to be done?"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <button type="submit" id="todo-add">Add</button>
+        </form>
+        <div id="todo-priority-picker" class="todo-priority-picker" role="group" aria-label="Task priority">
+          <button type="button" class="btn-pick-priority" data-priority="high"   aria-pressed="false">● High</button>
+          <button type="button" class="btn-pick-priority" data-priority="medium" aria-pressed="false">● Med</button>
+          <button type="button" class="btn-pick-priority" data-priority="low"    aria-pressed="false">● Low</button>
+        </div>
+        <label class="sr-only" for="todo-sort">Sort tasks</label>
+        <select id="todo-sort">
+          <option value="date-asc">Date added ↑</option>
+          <option value="date-desc">Date added ↓</option>
+          <option value="alpha-asc">A → Z</option>
+          <option value="alpha-desc">Z → A</option>
+          <option value="incomplete-first">Incomplete first</option>
+          <option value="priority-first">Priority first</option>
+        </select>
+        <ul id="todo-list" class="todo-list"></ul>
+        <p id="todo-message" class="message" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- Quick Links -->
+      <section id="links-section" class="card" aria-labelledby="links-heading">
+        <h2 id="links-heading">Quick Links</h2>
+        <!-- Add form removed: quick links are static profile links -->
+        <div id="links-buttons" class="links-buttons"></div>
+        <p id="links-message" class="message" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="js/app.js" defer></script>
+  </body>
+</html>
+
+
+
+

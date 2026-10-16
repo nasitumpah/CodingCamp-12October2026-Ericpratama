@@ -1,0 +1,1216 @@
+﻿/* =============================================
+   Life Dashboard — Full Stylesheet
+   ============================================= */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Custom Properties ── */
+:root {
+  /* Video background blur level — controlled by JS + slider */
+  --bg-blur: 8px;
+
+  /* Color fallbacks (dark) — overridden by [data-theme] selectors below */
+  --color-bg:          #0f1117;
+  --color-surface:     #1a1d27;
+  --color-surface-2:   #22263a;
+  --color-border:      #2e3354;
+  --color-primary:     #6c63ff;
+  --color-primary-dim: #4e46c0;
+  --color-accent:      #ff6584;
+  --color-success:     #43d9ad;
+  --color-warning:     #ffd166;
+  --color-text:        #e2e8f0;
+  --color-text-muted:  #8890b0;
+  --color-text-faint:  #4a506e;
+
+  /* Typography */
+  --font: 'Inter', system-ui, sans-serif;
+
+  /* Spacing & radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  /* Shadows */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-btn:  0 2px 8px rgba(108, 99, 255, 0.4);
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+/* ── Theme: Dark (default) ── */
+[data-theme="dark"] {
+  --color-bg:          #0f1117;
+  --color-surface:     #1a1d27;
+  --color-surface-2:   #22263a;
+  --color-border:      #2e3354;
+  --color-primary:     #6c63ff;
+  --color-primary-dim: #4e46c0;
+  --color-accent:      #ff6584;
+  --color-success:     #43d9ad;
+  --color-warning:     #ffd166;
+  --color-text:        #e2e8f0;
+  --color-text-muted:  #8890b0;
+  --color-text-faint:  #4a506e;
+}
+
+/* ── Theme: Light ── */
+[data-theme="light"] {
+  --color-bg:          #f5f5f7;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #e8e8ed;
+  --color-border:      #d1d1d6;
+  --color-primary:     #5046e5;
+  --color-primary-dim: #3730c4;
+  --color-accent:      #e53e3e;
+  --color-success:     #1a7f5a;
+  --color-warning:     #b45309;
+  --color-text:        #1c1c1e;
+  --color-text-muted:  #3a3a3c;
+  --color-text-faint:  #636366;
+}
+
+/* ── Theme Toggle Button ── */
+#theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  padding: 0.5rem 0.85rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+#theme-toggle:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+#theme-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px; /* Req 13.4: base body font-size ≥ 14px */
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(108, 99, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 101, 132, 0.06) 0%, transparent 60%);
+}
+
+/* ── Accessible hidden labels ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Dashboard Grid ── */
+/*
+ * Req 13.5: fluid layout, 320px–1920px, no horizontal scroll or overlap.
+ *
+ * `minmax(min(300px, 100%), 1fr)` — the column minimum is clamped to 100%
+ * of the available container width, so at narrow viewports (e.g. 320px) where
+ * 300px would exceed the container, the column collapses to a single full-width
+ * track instead of overflowing. At wider viewports (≥ ~660px with gutters) two
+ * or more columns form naturally. `max-width` keeps the layout from spreading
+ * too wide on 1920px+ screens, and `width: 100%` ensures the grid never exceeds
+ * its scroll-width context.
+ */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.card h2 {
+  font-size: 0.875rem; /* 14px — Req 13.4: minimum 14px for all body text */
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ── Buttons (shared) ── */
+button {
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.2rem;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Primary button style */
+button[id$="-start"],
+button[id$="-add"] {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-btn);
+}
+
+button[id$="-start"]:hover,
+button[id$="-add"]:hover {
+  background: var(--color-primary-dim);
+}
+
+/* Secondary button style */
+button[id$="-stop"],
+button[id$="-reset"] {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+button[id$="-stop"]:hover,
+button[id$="-reset"]:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* ── Inputs (shared) ── */
+input[type="text"],
+input[type="number"] {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1rem;
+  width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+/* ── Status / feedback messages ── */
+.message {
+  font-size: 0.875rem; /* 14px — Req 13.4: minimum 14px for all body text */
+  color: var(--color-text-muted);
+  min-height: 1.2em;
+  font-style: italic;
+}
+
+/* ======================================
+   GREETING SECTION
+   ====================================== */
+#greeting-section {
+  min-height: 13rem;  /* prevents card from resizing as content updates each second */
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+}
+
+.greeting-label {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.greeting-time {
+  font-size: 3.5rem;
+  font-weight: 300;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums; /* prevents layout shift as digits change each second */
+  white-space: nowrap;                /* keeps HH:MM:SS on one line */
+}
+
+.greeting-date {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Name Form (inside greeting card) ── */
+/*
+ * Req 15.1: inline name input + save button inside #greeting-section.
+ * Req 13.5: no horizontal overflow at 320px+; flex-wrap ensures graceful
+ *           wrapping on narrow viewports so the button drops below the input
+ *           rather than overflowing the card.
+ */
+.name-form {
+  display: flex;
+  flex-wrap: wrap;          /* wraps button below input at very narrow widths */
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.name-form input[type="text"] {
+  flex: 1 1 140px;          /* grows to fill, but allows shrinking to 140px min */
+  min-width: 0;             /* prevents intrinsic width from forcing overflow */
+}
+
+.name-form button[type="submit"] {
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-btn);
+}
+
+.name-form button[type="submit"]:hover {
+  background: var(--color-primary-dim);
+}
+
+/* ======================================
+   FOCUS TIMER SECTION
+   ====================================== */
+.timer-display {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+  text-align: center;
+  padding: 1.25rem 0;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--transition), border-color var(--transition), box-shadow var(--transition);
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.18);
+}
+
+.timer-display.running {
+  border-color: var(--color-success);
+  box-shadow: inset 0 2px 12px rgba(0,0,0,0.18), 0 0 18px rgba(67, 217, 173, 0.25);
+}
+
+/* Pulsing animation when timer is running — toggled via JS adding .running */
+.timer-display.running {
+  color: var(--color-success);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* --- handled above in .timer-display block --- */
+
+@keyframes pulse-glow {
+  0%, 100% { text-shadow: 0 0 8px rgba(67, 217, 173, 0.3); }
+  50%       { text-shadow: 0 0 20px rgba(67, 217, 173, 0.7); }
+}
+
+.timer-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+/* ── Duration Form (inside timer card) ── */
+/*
+ * Req 16.1: inline label + number input + set button inside #timer-section.
+ * Req 13.5: flex-wrap ensures graceful wrapping at narrow viewports (320px+)
+ *           so items drop to the next line rather than overflow the card.
+ * The number input uses the same --color-* / --radius-* / --font tokens
+ * as other inputs via the shared input[type="number"] selector above.
+ */
+.duration-form {
+  display: flex;
+  flex-wrap: wrap;        /* wraps at very narrow widths — no horizontal overflow */
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.duration-form label {
+  font-size: 0.875rem;    /* 14px — Req 13.4: minimum 14px */
+  color: var(--color-text-muted);
+  white-space: nowrap;    /* keeps label on one line before it wraps as a unit */
+  flex-shrink: 0;
+}
+
+.duration-form input[type="number"] {
+  flex: 1 1 80px;         /* grows to fill, allows shrinking; 80px suits 1–90 values */
+  min-width: 0;           /* prevents intrinsic size from forcing overflow */
+  width: auto;            /* override the shared width:100% for inline layout */
+  /* browser-default spin buttons are intentionally kept for usability */
+}
+
+.duration-form button[type="submit"] {
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-btn);
+}
+
+.duration-form button[type="submit"]:hover {
+  background: var(--color-primary-dim);
+}
+
+/* ======================================
+   TO-DO LIST SECTION
+   ====================================== */
+.todo-form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.todo-form input {
+  flex: 1;
+}
+
+.todo-form button {
+  flex-shrink: 0;
+}
+
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar */
+.todo-list::-webkit-scrollbar {
+  width: 4px;
+}
+.todo-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.todo-list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 99px;
+}
+
+/* Individual to-do items — JS should render <li> with this structure */
+.todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  transition: background var(--transition), opacity var(--transition);
+  animation: slide-in 0.2s ease;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.todo-list li.completed,
+.todo-list li.task-completed {
+  opacity: 0.5;
+}
+
+.todo-list li.completed .todo-text,
+.todo-list li.task-completed .todo-text {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Checkbox */
+.todo-list li input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-success);
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.todo-text {
+  flex: 1;
+  min-width: 0;        /* allow shrinking below intrinsic width inside flex container */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Edit-mode controls inside todo items */
+.todo-list li .edit-input {
+  flex: 1 1 0;      /* grow freely, allow shrinking, ignore intrinsic size */
+  width: 0;         /* override the global input[type=text] width:100% */
+  min-width: 0;
+}
+
+.todo-list li .btn-save,
+.todo-list li .btn-cancel {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  padding: 0.3rem 0.7rem;
+  flex-shrink: 0;
+}
+
+.todo-list li .btn-save:hover {
+  background: var(--color-success);
+  color: #000;
+  border-color: var(--color-success);
+}
+
+.todo-list li .btn-cancel:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* Delete button inside todo items */
+.todo-list li .btn-delete {
+  background: transparent;
+  color: var(--color-text-muted); /* #8890b0 — ≥4.5:1 contrast on dark surface */
+  padding: 0.2rem 0.4rem;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.todo-list li .btn-delete:hover {
+  background: rgba(255, 101, 132, 0.15);
+  color: var(--color-accent);
+}
+
+/* ======================================
+   QUICK LINKS SECTION
+   ====================================== */
+.links-form {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.links-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.links-buttons a,
+.links-buttons .btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  color: var(--color-text);
+  font-size: 0.875rem; /* 14px — Req 13.4: minimum 14px */
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.links-buttons a:hover,
+.links-buttons .btn-link:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-btn);
+}
+
+.links-buttons a:focus-visible,
+.links-buttons .btn-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Delete button attached to each link */
+.links-buttons .link-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  padding: 0.15rem 0.15rem 0.15rem 1rem;
+  transition: border-color var(--transition);
+}
+
+.links-buttons .link-item:hover {
+  border-color: var(--color-primary);
+}
+
+.links-buttons .link-item a,
+.links-buttons .link-item .btn-link {
+  background: transparent;
+  border: none;
+  padding: 0.3rem 0.2rem;
+  border-radius: 0;
+}
+
+.links-buttons .link-item a:hover,
+.links-buttons .link-item .btn-link:hover {
+  background: transparent;
+  color: var(--color-primary);
+  transform: none;
+  box-shadow: none;
+}
+
+.links-buttons .link-item .btn-delete {
+  background: transparent;
+  color: var(--color-text-muted); /* #8890b0 — ≥4.5:1 contrast on dark surface */
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem; /* 14px — Req 13.4: minimum 14px for all body text */
+  border-radius: 99px;
+}
+
+.links-buttons .link-item .btn-delete:hover {
+  background: rgba(255, 101, 132, 0.15);
+  color: var(--color-accent);
+}
+
+/* ── Sort Selector (inside to-do card) ── */
+#todo-sort {
+  font-family: var(--font);
+  font-size: 0.9rem;           /* Req 13.4: minimum 14px (≈ 0.875rem) */
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1rem;
+  width: 100%;                 /* Req 13.5: full-width on narrow viewports */
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  /* Tint the native dropdown arrow to match the theme text colour */
+  appearance: auto;
+}
+
+#todo-sort:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+}
+
+#todo-sort option {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+/* ======================================
+   RESPONSIVE BREAKPOINTS
+   ====================================== */
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .greeting-time {
+    font-size: 2.5rem;
+  }
+
+  .timer-display {
+    font-size: 3rem;
+  }
+
+  .links-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .links-form button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) {
+  /*
+   * 3-column fixed grid layout:
+   *
+   *   col 1 (1fr)   col 2 (1fr)   col 3 (2fr)
+   *  ┌─────────────────────────────────────────┐
+   *  │  Greeting (spans all 3 columns)         │  row 1
+   *  ├──────────────┬──────────────────────────┤
+   *  │ Focus Timer  │  To-Do List              │  row 2
+   *  ├──────────────┤  (spans cols 2–3)        │
+   *  │ Quick Links  │                          │  row 3
+   *  └──────────────┴──────────────────────────┘
+   *
+   * col 3 is 2fr so To-Do gets double the width of the left column,
+   * giving plenty of room for task text + priority badge side by side.
+   */
+  .dashboard {
+    grid-template-columns: 1fr 1fr 2fr;
+  }
+
+  /* Row 1: Greeting full width */
+  #greeting-section {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  #greeting-section h2 {
+    /* Visually hidden but accessible to screen readers (Req 13.3) */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Row 2–3 col 1: Focus Timer (row 2) */
+  #timer-section {
+    grid-column: 1 / 2;
+    grid-row: 2;
+  }
+
+  /* Row 2–3 col 1: Quick Links (row 3, below timer) */
+  #links-section {
+    grid-column: 1 / 2;
+    grid-row: 3;
+  }
+
+  /* Rows 2–3 cols 2–3: To-Do List — tall and wide */
+  #todo-section {
+    grid-column: 2 / -1;
+    grid-row: 2 / 4;    /* spans both row 2 and row 3 */
+  }
+
+  /* Let the todo list grow to fill the extra vertical space */
+  #todo-section .todo-list {
+    max-height: none;   /* remove the 280px cap — let it fill the card */
+    flex: 1;
+  }
+}
+/* ======================================
+   VIDEO BACKGROUND
+   ====================================== */
+
+/*
+ * The video is positioned fixed, fills the entire viewport behind all content.
+ * #bg-video-overlay adds a semi-transparent dark/light tint so dashboard cards
+ * remain readable regardless of the video content.
+ * #bg-video-overlay also carries the backdrop-filter blur, applied via the
+ * --bg-blur CSS variable which JS updates on slider change.
+ */
+#bg-video-container {
+  position: fixed;
+  inset: 0;
+  z-index: -1;           /* behind everything */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* always fills the viewport, crops if needed */
+}
+
+/* When video fails to load (file missing), fall back to the existing body gradient */
+#bg-video:not([src]),
+#bg-video[src=""] {
+  display: none;
+}
+
+#bg-video-overlay {
+  position: absolute;
+  inset: 0;
+  /* Neutral overlay — theme-agnostic; video looks the same in dark and light mode */
+  background: rgba(0, 0, 0, 0.45);
+  /* Blur applied to everything behind the overlay (i.e. the video) */
+  backdrop-filter: blur(var(--bg-blur, 8px));
+  -webkit-backdrop-filter: blur(var(--bg-blur, 8px));
+  transition: backdrop-filter 0.15s ease, -webkit-backdrop-filter 0.15s ease;
+}
+
+
+/* When no video is loaded, hide the overlay so the body gradient shows normally */
+body:not(.has-video) #bg-video-container {
+  display: none;
+}
+
+/* Body transparent when video is active so the video shows through */
+body.has-video {
+  background-color: transparent;
+  background-image: none;
+}
+
+/* ======================================
+   BLUR CONTROL PANEL
+   ====================================== */
+
+/*
+ * Fixed panel bottom-left, always visible.
+ * Collapses to an icon on hover for minimal visual footprint.
+ */
+#blur-control {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  padding: 0.4rem 0.9rem;
+  box-shadow: var(--shadow-card);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  transition: background var(--transition), border-color var(--transition), opacity var(--transition);
+  /* Slightly dimmed when not hovered so it doesn't compete with content */
+  opacity: 0.7;
+}
+
+#blur-control:hover,
+#blur-control:focus-within {
+  opacity: 1;
+  background: var(--color-surface);
+}
+
+#blur-control label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
+.blur-icon {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+}
+
+/* Range input — styled to match dashboard aesthetic */
+#blur-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+#blur-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(108, 99, 255, 0.5);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+#blur-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(108, 99, 255, 0.5);
+}
+
+#blur-slider::-webkit-slider-thumb:hover,
+#blur-slider:focus::-webkit-slider-thumb {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.7);
+}
+
+#blur-slider:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 99px;
+}
+
+/* Numeric value badge next to slider */
+#blur-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  min-width: 1.4em;
+  text-align: right;
+}
+
+/* Hide blur control when video is not active */
+body:not(.has-video) #blur-control {
+  display: none;
+}
+
+
+
+/* ======================================
+   TASK PRIORITY BADGES & BORDERS
+   ====================================== */
+
+/*
+ * Each <li data-priority="high|medium|low|none"> gets a coloured left border
+ * so priority is visible at a glance without relying on colour alone.
+ * The badge button (.btn-priority) shows a compact pill; clicking cycles the level.
+ */
+
+/* Left-border accent per priority level */
+.todo-list li[data-priority="high"] {
+  border-left: 3px solid var(--color-accent);      /* red */
+}
+.todo-list li[data-priority="medium"] {
+  border-left: 3px solid var(--color-warning);     /* yellow */
+}
+.todo-list li[data-priority="low"] {
+  border-left: 3px solid var(--color-success);     /* green */
+}
+.todo-list li[data-priority="none"] {
+  border-left: 3px solid transparent;
+}
+
+/* Priority badge button */
+.btn-priority {
+  flex-shrink: 0;
+  max-width: 4.5rem;   /* cap badge width so it never crowds the description */
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform 0.1s ease;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.btn-priority:hover {
+  transform: scale(1.08);
+}
+
+.btn-priority.priority-high {
+  background: rgba(255, 101, 132, 0.18);
+  color: var(--color-accent);
+  border-color: rgba(255, 101, 132, 0.35);
+}
+
+.btn-priority.priority-medium {
+  background: rgba(255, 209, 102, 0.18);
+  color: var(--color-warning);
+  border-color: rgba(255, 209, 102, 0.35);
+}
+
+.btn-priority.priority-low {
+  background: rgba(67, 217, 173, 0.15);
+  color: var(--color-success);
+  border-color: rgba(67, 217, 173, 0.3);
+}
+
+.btn-priority.priority-none {
+  background: transparent;
+  color: var(--color-text-faint);
+  border-color: var(--color-border);
+}
+
+.btn-priority.priority-none:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+/* Mute badge when task is completed */
+.todo-list li.completed .btn-priority,
+.todo-list li.task-completed .btn-priority {
+  opacity: 0.4;
+}
+
+/* ======================================
+   FOCUS TIMER — BUTTON STYLES
+   ====================================== */
+
+/*
+ * Tombol timer dioverride secara khusus di sini supaya lebih ekspresif
+ * dari shared button style. Grid 3 kolom sama lebar memastikan ketiganya
+ * selalu rapi tanpa flex-wrap.
+ */
+
+/* ── Start ── hijau/primary, lebih tinggi, efek glow */
+#timer-start {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dim) 100%);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.45);
+  letter-spacing: 0.02em;
+  border: none;
+}
+
+#timer-start:hover {
+  background: linear-gradient(135deg, #7c74ff 0%, var(--color-primary) 100%);
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+#timer-start:active {
+  transform: scale(0.97) translateY(0);
+  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.4);
+}
+
+/* ── Stop ── amber/warning, sama tinggi, subtle */
+#timer-stop {
+  background: rgba(255, 209, 102, 0.12);
+  color: var(--color-warning);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  letter-spacing: 0.02em;
+}
+
+#timer-stop:hover {
+  background: rgba(255, 209, 102, 0.22);
+  border-color: var(--color-warning);
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Reset ── ghost button, muted */
+#timer-reset {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.45rem 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  letter-spacing: 0.02em;
+}
+
+#timer-reset:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+  transform: translateY(-1px);
+}
+
+/* ── Ikon kecil di dalam tombol ── */
+.btn-icon {
+  font-size: 0.8em;
+  opacity: 0.85;
+  margin-right: 0.1em;
+  vertical-align: middle;
+}
+
+/* ── Duration form: Set button lebih compact tapi tetap polished ── */
+#duration-set {
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  box-shadow: var(--shadow-btn);
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+#duration-set:hover {
+  background: var(--color-primary-dim);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* ======================================
+   QUICK LINKS — PROFILE LINK STYLE
+   ====================================== */
+
+/*
+ * Link buttons sekarang standalone (tanpa tombol hapus).
+ * Ikon + label side by side, tampilan pill yang lebih lebar dan polished.
+ */
+.links-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.btn-link:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.link-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+  font-style: normal;
+}
+
+.link-label {
+  line-height: 1;
+}
+
+/* ======================================
+   TODO PRIORITY PICKER (form input)
+   ====================================== */
+
+/*
+ * Tiga tombol pill kecil di bawah form tambah tugas.
+ * Satu tombol bisa aktif (aria-pressed="true") per satu waktu.
+ * Warna per level mengikuti token priority yang sudah ada.
+ */
+.todo-priority-picker {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-pick-priority {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 99px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), transform 0.1s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-pick-priority:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+/* Active state per level */
+.btn-pick-priority[data-priority="high"][aria-pressed="true"] {
+  background: rgba(255, 101, 132, 0.18);
+  color: var(--color-accent);
+  border-color: rgba(255, 101, 132, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 101, 132, 0.2);
+}
+
+.btn-pick-priority[data-priority="medium"][aria-pressed="true"] {
+  background: rgba(255, 209, 102, 0.18);
+  color: var(--color-warning);
+  border-color: rgba(255, 209, 102, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.2);
+}
+
+.btn-pick-priority[data-priority="low"][aria-pressed="true"] {
+  background: rgba(67, 217, 173, 0.15);
+  color: var(--color-success);
+  border-color: rgba(67, 217, 173, 0.4);
+  box-shadow: 0 0 0 2px rgba(67, 217, 173, 0.15);
+}
